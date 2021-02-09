@@ -224,4 +224,145 @@ class jk_wp_post_reactions
         <?php
     }
 
+    public function ajax_handler()
+    {
+
+        $react_type = (int)$_POST['react_type'];
+
+        $post_id = $_POST['post_id'];
+
+        $user_id = $_POST['user_id'];
+
+        $user_react = get_option('reaction_user_' . $user_id);
+
+        $post_reactions = get_post_meta($post_id, 'post_reactions_' . $post_id);
+
+        if (empty($user_react)):
+
+            $user_react = array();
+
+        endif;
+
+        if (empty($post_reactions[0]['terribly'])):
+
+            $post_reactions[0]['terribly'] = 0;
+
+        endif;
+
+        if (empty($post_reactions[0]['badly'])):
+
+            $post_reactions[0]['badly'] = 0;
+
+        endif;
+
+        if (empty($post_reactions[0]['good'])):
+
+            $post_reactions[0]['good'] = 0;
+
+        endif;
+
+        if (empty($post_reactions[0]['cool'])):
+
+            $post_reactions[0]['cool'] = 0;
+
+        endif;
+
+        if (empty($post_reactions[0]['excellent'])):
+
+            $post_reactions[0]['excellent'] = 0;
+
+        endif;
+
+        if ($react_type === 1):
+
+            $post_reactions[0]['terribly'] = $post_reactions[0]['terribly'] + 1;
+
+        endif;
+
+        if ($react_type === 2):
+
+            $post_reactions[0]['badly'] = $post_reactions[0]['badly'] + 1;
+
+        endif;
+
+        if ($react_type === 3):
+
+            $post_reactions[0]['good'] = $post_reactions[0]['good'] + 1;
+
+        endif;
+
+        if ($react_type === 4):
+
+            $post_reactions[0]['cool'] = $post_reactions[0]['cool'] + 1;
+
+        endif;
+
+        if ($react_type === 5):
+
+            $post_reactions[0]['excellent'] = $post_reactions[0]['excellent'] + 1;
+
+        endif;
+
+        if (!empty($user_react[$post_id])):
+
+            if ($user_react[$post_id] === 1 && $post_reactions[0]['terribly'] > 0):
+
+                $post_reactions[0]['terribly'] = $post_reactions[0]['terribly'] - 1;
+
+            endif;
+
+            if ($user_react[$post_id] === 2 && $post_reactions[0]['badly'] > 0):
+
+                $post_reactions[0]['badly'] = $post_reactions[0]['badly'] - 1;
+
+            endif;
+
+            if ($user_react[$post_id] === 3 && $post_reactions[0]['good'] > 0):
+
+                $post_reactions[0]['good'] = $post_reactions[0]['good'] - 1;
+
+            endif;
+
+            if ($user_react[$post_id] === 4 && $post_reactions[0]['cool'] > 0):
+
+                $post_reactions[0]['cool'] = $post_reactions[0]['cool'] - 1;
+
+            endif;
+
+            if ($user_react[$post_id] === 5 && $post_reactions[0]['excellent'] > 0):
+
+                $post_reactions[0]['excellent'] = $post_reactions[0]['excellent'] - 1;
+
+            endif;
+
+        endif;
+
+        update_post_meta($post_id, 'post_reactions_' . $post_id, $post_reactions[0]);
+
+        if (!empty($user_react[$post_id])):
+
+            echo json_encode(array(
+                'current' => $react_type,
+                'old' => $user_react[$post_id],
+            ));
+
+        endif;
+
+        $user_react[$post_id] = $react_type;
+
+        update_option('reaction_user_' . $user_id, $user_react, false);
+
+        die();
+
+    }
+
+    public function ajax_init()
+    {
+
+        add_action('wp_ajax_nopriv_jk_reactions', [$this, 'ajax_handler']);
+
+        add_action('wp_ajax_jk_reactions', [$this, 'ajax_handler']);
+
+    }
+
 }
