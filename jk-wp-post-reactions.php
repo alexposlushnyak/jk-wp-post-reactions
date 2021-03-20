@@ -1,8 +1,15 @@
 <?php defined('ABSPATH') || exit;
 
+/**
+ * Class jk_wp_post_reactions
+ */
 class jk_wp_post_reactions
 {
 
+    /**
+     * @param $post_id
+     * @param $user_id
+     */
     public static function the_post_reactions($post_id, $user_id)
     {
 
@@ -224,6 +231,9 @@ class jk_wp_post_reactions
         <?php
     }
 
+    /**
+     *
+     */
     public function ajax_handler()
     {
 
@@ -356,6 +366,9 @@ class jk_wp_post_reactions
 
     }
 
+    /**
+     *
+     */
     public function ajax_init()
     {
 
